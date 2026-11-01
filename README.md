@@ -445,14 +445,6 @@ A tipagem ajuda a detectar chamadas incorretas no desenvolvimento. Zod verifica 
 
 No SSR, o servidor chama o router diretamente. Depois da hidratação, o navegador usa o cliente tRPC por HTTP.
 
-### Como explicar na entrevista
-
-“Usei Next.js 15 com tRPC e um contrato Zod compartilhado. As tarefas ficam em memória no servidor. A primeira página é renderizada no servidor usando o mesmo router do CRUD. Os filtros são aplicados antes da paginação por cursor, e os indicadores são calculados sobre toda a coleção. Mantive poucas camadas e cobri as regras e os fluxos principais com testes.”
-
-## Diferenciais do projeto
-
-A Artefact apresenta seu trabalho em torno de dados, IA e impacto no negócio. Sua página de engenharia também destaca APIs, testes e entrega de ponta a ponta. Os extras escolhidos demonstram decisões úteis e verificáveis, mantendo o CRUD simples.
-
 ### Já implementados
 
 | Diferencial | O que demonstra |
@@ -470,92 +462,13 @@ A Artefact apresenta seu trabalho em torno de dados, IA e impacto no negócio. S
 
 Os indicadores são contagem e taxa de conclusão de tarefas. Não há dados suficientes para afirmar aumento de produtividade, economia de tempo ou impacto financeiro.
 
-### Próximo extra opcional: IA com uma finalidade clara
+### Próximo passo: Agente IA 
 
-Uma evolução pequena seria **sugerir subtarefas a partir da descrição de uma tarefa**.
+- **sugerir subtarefas a partir da descrição de uma tarefa**.
 
 O fluxo proposto: a pessoa pede a sugestão, vê uma prévia e escolhe o que aproveitar. A criação continua dependendo da confirmação humana.
 
-Para uma implementação real:
-
-- Executar a chamada ao provedor somente no servidor.
-- Validar o formato de saída e limitar tamanho, tempo e custo.
-- Não enviar todas as tarefas quando apenas a descrição selecionada é necessária.
-- Tratar a descrição como dado, sem dar ao modelo ferramentas para executar ações.
-- Preservar o formulário quando houver falha.
-- Manter todo o CRUD funcional sem chave de IA.
-- Diferenciar claramente resposta real e eventual modo demonstrativo.
-
-Essa funcionalidade **não foi implementada** nesta entrega. O cartão de foco atual é uma regra determinística baseada nas prioridades.
-
-### O que priorizar na apresentação
-
-Demonstre primeiro o CRUD funcionando, os erros, o SSR e o scroll. Depois, explique um diferencial de produto e uma decisão técnica. Isso oferece evidências melhores do que listar muitas funcionalidades.
-
-### Referências para o contexto da empresa
-
-- [Posicionamento da Artefact](https://www.artefact.com/br/)
-- [Página de Data & Software Engineer](https://jobs.artefact.com/job/data-software-engineer-m-f-d/)
-
-As escolhas acima são uma recomendação baseada nesse contexto público; a vaga específica e o enunciado continuam sendo as referências da avaliação.
-
-## Apresentação do projeto
-
-Roteiro de demonstração em aproximadamente cinco minutos.
-
-1. **Problema e escopo:** explique que o objetivo é organizar tarefas com um CRUD simples, SSR e tRPC.
-2. **Criação e validação:** tente enviar sem título; depois crie uma tarefa com prioridade alta e outra com prioridade média.
-3. **Edição e exclusão:** altere uma descrição, cancele uma exclusão e depois confirme.
-4. **Conclusão e visão geral:** conclua uma tarefa e mostre que a contagem e a taxa de conclusão mudam.
-5. **Busca e filtros:** filtre por prioridade e busque uma palavra com acento usando a versão sem acento.
-6. **SSR:** com tarefas cadastradas, desative JavaScript e recarregue. A primeira página deve continuar visível.
-7. **Infinite scroll:** com mais de 10 tarefas, role até o fim para carregar a próxima página.
-8. **Decisão técnica:** explique o cursor por data/ID e o uso do mesmo schema no formulário e no backend.
-9. **Qualidade:** mostre `npm run check` e os cenários Playwright.
-10. **Limites:** memória por processo, ausência de persistência e espaço para evolução sem alterar o escopo atual.
-
-### Uma justificativa para os extras
-
-“Como a empresa trabalha com dados e impacto no negócio, acrescentei uma visão simples da lista, com métricas de conclusão e prioridade. Os números são calculados no backend sobre todas as tarefas. Mantive a solução independente de serviços externos para que seja fácil executar e avaliar.”
-
-### Perguntas para estar preparada
-
-- Por que tRPC em vez de definir manualmente rotas REST?
-- O que `"use client"` muda e por que isso não elimina o SSR?
-- Por que os indicadores não usam só os itens carregados na tela?
-- O que acontece se excluir a tarefa usada como cursor?
-- O que muda ao publicar várias instâncias?
-- Como você acrescentaria autenticação e armazenamento persistente depois?
-- Como manter uma integração de IA opcional, verificável e controlada?
-
 ## Solução de problemas
-
-### Import de router não encontrado
-
-Os caminhos dependem da localização do arquivo:
-
-| Arquivo | Import correto |
-| --- | --- |
-| `src/server/router.ts` | `import { router } from "./trpc";` |
-| `src/server/routers/tarefas.ts` | `import { publicProcedure, router } from "../trpc";` |
-
-`./` aponta para a mesma pasta; `../` sobe um nível.
-
-### Erro no import de globals.css
-
-Mantenha o import em `src/app/layout.tsx`:
-
-```typescript
-import "./globals.css";
-```
-
-O arquivo CSS deve estar em `src/app/globals.css`. A declaração em `src/types/styles.d.ts` contém:
-
-```typescript
-declare module "*.css" {}
-```
-
-Ela é incluída pela configuração do projeto e permite a verificação de imports por efeito colateral. Se o aviso persistir apenas no editor, selecione a versão TypeScript do workspace e execute `TypeScript: Restart TS Server`.
 
 ### Playwright não encontrado ou parâmetros com any implícito
 
@@ -581,29 +494,6 @@ Os testes devem permanecer separados:
 
 O conteúdo E2E não deve ser copiado para o arquivo de testes do backend. Quando o pacote é resolvido, os tipos de `page`, `browser` e callbacks são inferidos.
 
-### Referências antigas em .next/types
-
-Arquivos em `.next` são gerados. Após mover ou remover uma rota, pode restar uma referência antiga.
-
-Pare o servidor com `Ctrl + C`. No PowerShell, na raiz do projeto:
-
-```powershell
-if (Test-Path .next) {
-    Remove-Item .next -Recurse -Force
-}
-
-if (Test-Path tsconfig.tsbuildinfo) {
-    Remove-Item tsconfig.tsbuildinfo -Force
-}
-
-npm run typecheck
-npm run dev
-```
-
-As entradas removidas são caches regeneráveis. Não edite os arquivos em `.next/types` para corrigir o problema. A extensão `.js` nos imports gerados é compatível com arquivos de origem TypeScript; ela não é motivo para criar um layout JavaScript.
-
-O script de tipos deve continuar sendo `next typegen && tsc --noEmit`.
-
 ### Porta ocupada ou erro de conexão
 
 Para desenvolvimento, use outra porta com `npm run dev -- --port 3001`. Para E2E, deixe livre a porta 3100 configurada no Playwright.
@@ -611,8 +501,6 @@ Para desenvolvimento, use outra porta com `npm run dev -- --port 3001`. Para E2E
 Se a interface informar falha de conexão, verifique se o servidor está em execução e consulte seu terminal. Neste projeto não existe uma API separada que precise ser iniciada em outro processo.
 
 ## Próximos passos de melhoria
-
-As melhorias abaixo são **planejadas**, não funcionalidades atuais. A implementação entregue preserva o requisito de memória e o escopo do desafio.
 
 | Prioridade | Melhoria | Objetivo | Como validar |
 | --- | --- | --- | --- |
@@ -624,11 +512,7 @@ As melhorias abaixo são **planejadas**, não funcionalidades atuais. A implemen
 | Média | Ampliação dos testes de interface | Verificar outros tamanhos de tela e navegadores | Casos adicionais e execução em CI |
 | Evolução de produto | Persistência compartilhada | Manter dados após reinício e suportar réplicas | Testes de integração com armazenamento real |
 | Evolução de produto | Autenticação e autorização | Separar tarefas por usuário com verificação no backend | Testes de acesso permitido e negado |
-| Opcional | IA para sugerir subtarefas | Ajudar a transformar uma descrição em próximos passos | Saída validada, prévia, confirmação e tratamento de falha |
-
-A persistência e a autenticação pertencem a uma evolução posterior, quando o escopo permitir. Para a avaliação atual, a coleção continua em memória.
-
-A proposta de IA está detalhada na seção de diferenciais. Ela deve continuar opcional: o CRUD precisa funcionar integralmente sem chave de provedor.
+| Diferencial | IA para sugerir subtarefas | Ajudar a transformar uma descrição em próximos passos | Saída validada, prévia, confirmação e tratamento de falha |
 
 ## Limitações e decisões de escopo
 
@@ -638,7 +522,6 @@ A proposta de IA está detalhada na seção de diferenciais. Ela deve continuar 
 - Não há autenticação, isolamento por usuário ou sincronização em tempo real entre abas.
 - A paginação não representa um snapshot entre requisições; alterações concorrentes podem aparecer nas atualizações seguintes.
 - Uma edição posterior pode substituir dados de outra edição. Controle de concorrência está no roadmap.
-- Não há integração com IA implementada. A sugestão de foco usa somente regras sobre a coleção.
 - A acessibilidade atual contempla práticas básicas; uma auditoria completa está planejada.
 - A identidade visual é um estudo inspirado na referência fornecida para o desafio técnico.
 
