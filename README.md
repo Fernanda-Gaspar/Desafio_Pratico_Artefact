@@ -19,7 +19,6 @@ A interface usa uma identidade visual inspirada na referência da Artefact, com 
 - [Modelo de dados e operações](#modelo-de-dados-e-operações)
 - [SSR, paginação e indicadores](#ssr-paginação-e-indicadores)
 - [Guia do backend em TypeScript](#guia-do-backend-em-typescript)
-- [Diferenciais do projeto](#diferenciais-do-projeto)
 - [Apresentação do projeto](#apresentação-do-projeto)
 - [Solução de problemas](#solução-de-problemas)
 - [Próximos passos de melhoria](#próximos-passos-de-melhoria)
