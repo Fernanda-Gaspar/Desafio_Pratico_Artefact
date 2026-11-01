@@ -1,97 +1,97 @@
 # Artefact Tasks
 
-Aplicação de gerenciamento de tarefas desenvolvida para um desafio técnico com **Next.js 15, React, TypeScript e tRPC**. O projeto oferece CRUD, renderização inicial no servidor, carregamento incremental e dados mantidos exclusivamente na memória do backend.
+A task management application built for a technical challenge using **Next.js 15, React, TypeScript, and tRPC**. The project provides full CRUD functionality, initial server-side rendering, incremental loading, and data stored exclusively in the backend's memory.
 
-A interface usa uma identidade visual inspirada na referência da Artefact, com gradiente azul, roxo e rosa, elementos vetoriais e organização responsiva. Trata-se de um projeto de avaliação técnica, sem vínculo de produto oficial com a empresa.
+The interface features a visual identity inspired by the Artefact reference, with a blue, purple, and pink gradient, vector elements, and a responsive layout. This project was developed for a technical assessment and is not an official Artefact product.
 
-## Índice
+## Table of Contents
 
-- [Visão geral](#visão-geral)
-- [Requisitos atendidos](#requisitos-atendidos)
-- [Tecnologias](#tecnologias)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Execução](#execução)
-- [Como utilizar](#como-utilizar)
-- [Comandos disponíveis](#comandos-disponíveis)
-- [Testes e integração contínua](#testes-e-integração-contínua)
-- [Estrutura e arquitetura](#estrutura-e-arquitetura)
-- [Modelo de dados e operações](#modelo-de-dados-e-operações)
-- [SSR, paginação e indicadores](#ssr-paginação-e-indicadores)
-- [Guia do backend em TypeScript](#guia-do-backend-em-typescript)
-- [Apresentação do projeto](#apresentação-do-projeto)
-- [Solução de problemas](#solução-de-problemas)
-- [Próximos passos de melhoria](#próximos-passos-de-melhoria)
-- [Limitações e decisões de escopo](#limitações-e-decisões-de-escopo)
-- [Referências](#referências)
+- [Overview](#overview)
+- [Requirements Met](#requirements-met)
+- [Technologies](#technologies)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [How to Use](#how-to-use)
+- [Available Commands](#available-commands)
+- [Testing and Continuous Integration](#testing-and-continuous-integration)
+- [Project Structure and Architecture](#project-structure-and-architecture)
+- [Data Model and Operations](#data-model-and-operations)
+- [SSR, Pagination, and Metrics](#ssr-pagination-and-metrics)
+- [TypeScript Backend Guide](#typescript-backend-guide)
+- [Project Presentation](#project-presentation)
+- [Troubleshooting](#troubleshooting)
+- [Next Steps and Improvements](#next-steps-and-improvements)
+- [Limitations and Scope Decisions](#limitations-and-scope-decisions)
+- [References](#references)
 
-## Visão geral
+## Overview
 
-O objetivo é permitir que uma pessoa registre tarefas, organize prioridades e acompanhe sua lista em uma interface simples.
+The goal is to let users create tasks, organize priorities, and keep track of their to-do lists through a simple interface.
 
-O frontend e o backend executam no **mesmo servidor Next.js**. As operações do backend são expostas por tRPC e usam uma coleção em memória. O frontend recebe a primeira página já renderizada no servidor e utiliza TanStack Query para as interações seguintes.
+The frontend and backend run on the **same Next.js server**. Backend operations are exposed through tRPC and use an in-memory collection. The frontend receives the first page already rendered on the server and uses TanStack Query for subsequent interactions.
 
-Funcionalidades disponíveis:
+Available features:
 
-- Criar, listar, consultar, editar e excluir tarefas.
-- Validar título obrigatório e comprimentos dos campos.
-- Concluir e reabrir uma tarefa.
-- Definir prioridade baixa, média ou alta.
-- Buscar por título ou descrição, sem diferenciar maiúsculas e acentos.
-- Filtrar por status e prioridade no backend.
-- Carregar mais tarefas conforme a rolagem ou por um botão.
-- Acompanhar total, tarefas em aberto, concluídas e taxa de conclusão.
-- Filtrar rapidamente as tarefas de prioridade alta em aberto.
-- Receber feedback de carregamento, sucesso e erro.
+- Create, list, retrieve, edit, and delete tasks.
+- Validate required titles and field length limits.
+- Mark tasks as completed and reopen them.
+- Set low, medium, or high priority.
+- Search by title or description, ignoring case and accents.
+- Filter by status and priority on the backend.
+- Load additional tasks as the user scrolls or clicks a button.
+- Track total, open, and completed tasks, as well as the completion rate.
+- Quickly filter open high-priority tasks.
+- Display feedback for loading, successful operations, and errors.
 
-A aplicação começa com a lista vazia. A primeira tarefa pode ser cadastrada pela interface.
+The application starts with an empty task list. Users can create their first task through the interface.
 
-## Requisitos atendidos
+## Requirements Met
 
-| Requisito do desafio | Implementação |
+| Challenge Requirement | Implementation |
 | --- | --- |
-| Next.js 15 | App Router com Next.js 15.5.28 |
-| Comunicação via tRPC | Procedures tipadas em `src/server/routers/tarefas.ts` |
-| Armazenamento em memória | `Map<string, Tarefa>` no contexto do servidor |
-| Campos obrigatórios da tarefa | ID, título, descrição opcional e timestamp de criação |
-| CRUD completo | Criação, listagem, edição e exclusão |
-| Validação no backend | Schema Zod aplicado às entradas das procedures |
-| Erros significativos | `BAD_REQUEST` e `NOT_FOUND` |
-| Listagem com SSR | Consulta ao router antes da renderização do HTML |
-| Formulário com hooks | Componente funcional compartilhado para criação e edição |
-| Exclusão na listagem | Confirmação, bloqueio durante a operação e feedback |
-| Estados da interface | Carregamento, lista vazia, falha de rede e nova tentativa |
-| Infinite scroll | Paginação por cursor e `IntersectionObserver` |
-| Comentários e documentação | Decisões comentadas no código e documentação consolidada aqui |
+| Next.js 15 | App Router with Next.js 15.5.28 |
+| tRPC communication | Typed procedures in `src/server/routers/tarefas.ts` |
+| In-memory storage | `Map<string, Tarefa>` in the server context |
+| Required task fields | ID, title, optional description, and creation timestamp |
+| Full CRUD | Create, list, update, and delete operations |
+| Backend validation | Zod schemas applied to procedure inputs |
+| Meaningful errors | `BAD_REQUEST` and `NOT_FOUND` |
+| SSR task list | Router query executed before HTML rendering |
+| Form using hooks | Shared functional component for creating and editing tasks |
+| Delete from the list | Confirmation, disabling controls during the operation, and feedback |
+| UI states | Loading, empty list, network error, and retry |
+| Infinite scroll | Cursor-based pagination and `IntersectionObserver` |
+| Comments and documentation | Design decisions explained in code comments and consolidated documentation here |
 
-Conclusão, prioridade, busca, filtros e indicadores são extras. Eles complementam o CRUD sem alterar a exigência de armazenamento em memória.
+Task completion, priorities, search, filters, and metrics are additional features. They enhance the CRUD functionality without changing the in-memory storage requirement.
 
-## Tecnologias
+## Technologies
 
-| Tecnologia | Versão ou linha adotada | Uso |
+| Technology | Version or Adopted Release | Purpose |
 | --- | --- | --- |
-| Next.js | 15.5.28 | Rotas, SSR e servidor da aplicação |
-| React | 19.x | Interface e componentes funcionais |
-| TypeScript | 5.9.3 | Tipagem estática |
-| tRPC | 11.22.1 | Procedures e contrato entre cliente e servidor |
-| TanStack Query | 5.x | Consultas, mutações, cache e paginação |
-| Zod | 4.x | Validação compartilhada |
-| Node.js test runner + tsx | Conforme o lockfile | Testes do backend e transporte HTTP |
-| Playwright Test | 1.64.1 | Testes de navegador |
-| ESLint | 9.x | Análise estática |
-| GitHub Actions | Workflow incluído | Verificações de integração contínua |
-| CSS e SVG locais | Sem biblioteca de componentes | Layout e elementos visuais |
+| Next.js | 15.5.28 | Routing, SSR, and application server |
+| React | 19.x | User interface and functional components |
+| TypeScript | 5.9.3 | Static typing |
+| tRPC | 11.22.1 | Procedures and client-server contract |
+| TanStack Query | 5.x | Queries, mutations, caching, and pagination |
+| Zod | 4.x | Shared validation |
+| Node.js test runner + tsx | As specified in the lockfile | Backend and HTTP transport tests |
+| Playwright Test | 1.64.1 | Browser tests |
+| ESLint | 9.x | Static analysis |
+| GitHub Actions | Workflow included | Continuous integration checks |
+| Local CSS and SVG | No component library | Layout and visual elements |
 
-O `package-lock.json` registra as versões resolvidas. Use `npm ci` para instalar esse conjunto de dependências.
+The `package-lock.json` file records the resolved versions. Use `npm ci` to install this exact set of dependencies.
 
-## Pré-requisitos
+## Prerequisites
 
-- **Node.js 22 ou superior**, com npm disponível.
-- **Git**, caso a instalação seja feita por clonagem.
-- Um navegador para utilizar a aplicação.
-- Chromium do Playwright apenas para executar a suíte E2E.
+- **Node.js 22 or later**, with npm available.
+- **Git**, if cloning the repository.
+- A web browser to use the application.
+- Playwright's Chromium browser, only when running the E2E test suite.
 
-Confira o ambiente:
+Check your environment:
 
 ```bash
 node --version
@@ -99,15 +99,15 @@ npm --version
 git --version
 ```
 
-O arquivo `.nvmrc` indica Node.js 22 para quem utiliza um gerenciador de versões.
+The `.nvmrc` file specifies Node.js 22 for users of a Node.js version manager.
 
-Não é necessário configurar banco de dados, .NET, Docker, chave de IA ou um segundo servidor. A versão atual também não exige arquivo `.env`.
+There is no need to configure a database, .NET, Docker, an AI API key, or a second server. The current version also does not require an `.env` file.
 
-## Instalação
+## Installation
 
-### Clonar o repositório
+### Clone the Repository
 
-Substitua `URL_DO_REPOSITORIO` pelo endereço HTTPS ou SSH real deste repositório antes de executar:
+Replace `URL_DO_REPOSITORIO` with this repository's actual HTTPS or SSH URL before running:
 
 ```bash
 git clone URL_DO_REPOSITORIO artefact-tasks
@@ -115,104 +115,104 @@ cd artefact-tasks
 npm ci --include=dev
 ```
 
-O argumento `artefact-tasks` define o nome da pasta local, independentemente do nome do repositório remoto.
+The `artefact-tasks` argument sets the local directory name, regardless of the remote repository's name.
 
-A opção `--include=dev` garante a instalação das ferramentas usadas para tipos, lint e testes, incluindo o Playwright.
+The `--include=dev` option ensures that development tools for type checking, linting, and testing, including Playwright, are installed.
 
-### Instalar a partir do ZIP
+### Install from a ZIP File
 
-1. Extraia o arquivo do projeto.
-2. Abra um terminal na pasta que contém `package.json` e `tsconfig.json`.
-3. Instale as dependências:
+1. Extract the project archive.
+2. Open a terminal in the directory containing `package.json` and `tsconfig.json`.
+3. Install the dependencies:
 
 ```bash
 npm ci --include=dev
 ```
 
-Abra essa mesma pasta no editor. Evite abrir somente um arquivo isolado, pois o TypeScript precisa localizar a configuração do projeto.
+Open this same directory in your code editor. Avoid opening just an individual file, as TypeScript needs to locate the project configuration.
 
-### Configurar o editor
+### Configure the Editor
 
-No VS Code, selecione a versão de TypeScript instalada no workspace:
+In VS Code, select the TypeScript version installed in the workspace:
 
-1. Abra a paleta de comandos com `Ctrl + Shift + P`.
-2. Execute `TypeScript: Select TypeScript Version`.
-3. Selecione `Use Workspace Version`.
+1. Open the Command Palette with `Ctrl + Shift + P`.
+2. Run `TypeScript: Select TypeScript Version`.
+3. Select `Use Workspace Version`.
 
-O arquivo `.vscode/settings.json` aponta para `node_modules/typescript/lib`. As declarações de CSS ficam em `src/types/styles.d.ts`.
+The `.vscode/settings.json` file points to `node_modules/typescript/lib`. CSS declarations are located in `src/types/styles.d.ts`.
 
-## Execução
+## Running the Application
 
-### Desenvolvimento
+### Development
 
 ```bash
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-Frontend e backend iniciam juntos. Para encerrar o servidor, use `Ctrl + C` no terminal.
+The frontend and backend start together. To stop the server, press `Ctrl + C` in the terminal.
 
-Se a porta 3000 estiver ocupada:
+If port 3000 is already in use:
 
 ```bash
 npm run dev -- --port 3001
 ```
 
-Nesse caso, acesse [http://localhost:3001](http://localhost:3001).
+In that case, open [http://localhost:3001](http://localhost:3001).
 
-### Build e execução de produção local
+### Build and Run Locally in Production Mode
 
 ```bash
 npm run build
 npm start
 ```
 
-O comando `build` gera a aplicação otimizada; `start` executa o resultado na porta 3000. Execute o build antes de usar `npm start`.
+The `build` command generates the optimized application; `start` runs the result on port 3000. Run the build before using `npm start`.
 
-Para conferir o fluxo completo, prefira a versão de produção local. O armazenamento continua em memória nesse modo.
+To verify the complete flow, prefer running the local production build. Data storage remains in memory in this mode.
 
-> **Dados temporários:** reiniciar o servidor apaga as tarefas. Esse comportamento é esperado no desafio.
+> **Temporary data:** Restarting the server deletes all tasks. This behavior is expected for this challenge.
 
-## Como utilizar
+## How to Use
 
-1. Clique em **Criar uma tarefa** ou **Nova tarefa**.
-2. Informe o título, acrescente uma descrição se necessário e escolha a prioridade.
-3. Salve para retornar à listagem.
-4. Use o ícone de edição para alterar os campos.
-5. Marque a caixa de seleção para concluir; desmarque para reabrir.
-6. Use a busca e os filtros para localizar tarefas.
-7. Clique no ícone de exclusão e confirme ou cancele a operação.
-8. Com mais de 10 tarefas, role até o fim para carregar a próxima página.
-9. Consulte o panorama para acompanhar os indicadores globais.
+1. Click **Criar uma tarefa** (Create a Task) or **Nova tarefa** (New Task).
+2. Enter a title, add a description if needed, and choose a priority.
+3. Save the task to return to the list.
+4. Use the edit icon to modify its fields.
+5. Check the box to complete a task; uncheck it to reopen the task.
+6. Use search and filters to find tasks.
+7. Click the delete icon and confirm or cancel the operation.
+8. Once there are more than 10 tasks, scroll to the bottom to load the next page.
+9. Check the overview section to monitor the global metrics.
 
-As mensagens da interface informam o resultado das operações. Em uma falha de gravação, o formulário preserva os dados para permitir nova tentativa.
+Interface messages indicate the result of each operation. If saving fails, the form preserves its data so the user can try again.
 
-## Comandos disponíveis
+## Available Commands
 
-| Comando | Finalidade |
+| Command | Purpose |
 | --- | --- |
-| `npm ci --include=dev` | Instalar as dependências do lockfile, incluindo desenvolvimento |
-| `npm run dev` | Iniciar o servidor de desenvolvimento |
-| `npm run build` | Gerar o build de produção |
-| `npm start` | Executar o build de produção |
-| `npm run lint` | Executar o ESLint |
-| `npm run typecheck` | Gerar os tipos de rota e verificar o TypeScript |
-| `npm test` | Executar os 17 testes do backend/adapter HTTP |
-| `npm run test:e2e` | Executar os 3 cenários Playwright |
-| `npm run check` | Executar lint, tipos, testes de backend e build |
+| `npm ci --include=dev` | Install dependencies from the lockfile, including development dependencies |
+| `npm run dev` | Start the development server |
+| `npm run build` | Generate a production build |
+| `npm start` | Run the production build |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Generate route types and check TypeScript |
+| `npm test` | Run the 17 backend/HTTP adapter tests |
+| `npm run test:e2e` | Run the 3 Playwright scenarios |
+| `npm run check` | Run linting, type checks, backend tests, and the build |
 
-`npm run check` não inclui os testes de navegador. A suíte E2E é executada separadamente.
+`npm run check` does not include browser tests. The E2E suite runs separately.
 
-## Testes e integração contínua
+## Testing and Continuous Integration
 
-### Verificação principal
+### Main Verification
 
 ```bash
 npm run check
 ```
 
-Também é possível executar cada etapa:
+You can also run each step separately:
 
 ```bash
 npm run lint
@@ -221,316 +221,318 @@ npm test
 npm run build
 ```
 
-### Testes do backend
+### Backend Tests
 
-Os **17 testes** de `tests/tarefas.test.ts` usam `node:test` com `tsx` e coleções isoladas por teste. Cobrem:
+The **17 tests** in `tests/tarefas.test.ts` use `node:test` with `tsx` and isolated collections for each test. They cover:
 
-- CRUD, geração de ID e preservação da data de criação.
-- Descrição opcional, título vazio, espaços e limites dos campos.
-- Consulta, atualização e exclusão de tarefas inexistentes.
-- Paginação com timestamps iguais, sem repetição ou omissão.
-- Exclusão do cursor e alterações entre páginas.
-- Transporte HTTP, mensagens amigáveis e rejeição de mutation por GET.
-- Prioridades, conclusão, indicadores globais e idempotência da definição de conclusão.
-- Busca sem acentos em tarefas fora da primeira página.
-- Rejeição de uma prioridade inválida.
+- CRUD, ID generation, and preservation of creation dates.
+- Optional descriptions, empty titles, whitespace, and field length limits.
+- Retrieving, updating, and deleting nonexistent tasks.
+- Pagination with identical timestamps, without duplicates or missing tasks.
+- Cursor deletion and changes between pages.
+- HTTP transport, user-friendly messages, and rejection of mutations sent via GET.
+- Priorities, completion, global metrics, and idempotent completion updates.
+- Accent-insensitive searches for tasks beyond the first page.
+- Rejection of invalid priority values.
 
-### Testes de navegador
+### Browser Tests
 
-Instale o navegador do Playwright:
+Install the Playwright browser:
 
 ```bash
 npx playwright install chromium
 ```
 
-No Linux, caso sejam necessárias as bibliotecas do sistema:
+On Linux, if system libraries are required:
 
 ```bash
 npx playwright install --with-deps chromium
 ```
 
-Depois, execute:
+Then run:
 
 ```bash
 npm run build
 npm run test:e2e
 ```
 
-O `playwright.config.ts` inicia um processo Next.js exclusivo na porta **3100**. Deixe essa porta livre. A suíte não reutiliza a instância pessoal iniciada na porta 3000.
+The `playwright.config.ts` file starts a dedicated Next.js process on port **3100**. Make sure this port is available. The suite does not reuse the personal instance started on port 3000.
 
-Os **3 cenários** verificam:
+The **3 scenarios** verify:
 
-1. Primeira página com 10 tarefas visíveis com JavaScript desativado.
-2. CRUD, validação, prioridade, conclusão e tratamento de falha de rede.
-3. Scroll de 10 para 20 e 23 tarefas, busca no servidor, filtros e largura de 390 px.
+1. The first page displays 10 tasks with JavaScript disabled.
+2. CRUD, validation, priority, completion, and network error handling.
+3. Infinite scrolling from 10 to 20 and then 23 tasks, server-side search, filters, and a 390 px viewport width.
 
-A suíte limpa as tarefas do servidor exclusivo antes de cada cenário. Os arquivos de diagnóstico de falhas ficam em `test-results/`.
+The suite clears tasks from its dedicated server before each scenario. Failure diagnostics are stored in `test-results/`.
 
-Para apenas listar os cenários, sem abrir o navegador:
+To list the scenarios without opening a browser:
 
 ```bash
 npx playwright test --list
 ```
 
-### Integração contínua
+### Continuous Integration
 
-O workflow `.github/workflows/ci.yml` é acionado em `push` e `pull_request`. Ele executa instalação, lint, tipos, testes do backend, build, instalação do Chromium e testes E2E.
+The `.github/workflows/ci.yml` workflow is triggered by `push` and `pull_request`. It runs dependency installation, linting, type checks, backend tests, the build, Chromium installation, and E2E tests.
 
-Para usá-lo, envie os arquivos deste projeto para a raiz do repositório GitHub e mantenha o GitHub Actions habilitado. A execução remota depende desse repositório; a presença do workflow não significa que uma execução remota já foi concluída.
+To use it, push the project files to the root of your GitHub repository and keep GitHub Actions enabled. Remote execution depends on that repository; the presence of the workflow does not mean a remote run has already completed.
 
-## Estrutura e arquitetura
+## Project Structure and Architecture
 
-| Arquivo ou pasta | Responsabilidade |
+| File or Directory | Responsibility |
 | --- | --- |
-| `src/app/page.tsx` | Listagem inicial e SSR |
-| `src/app/layout.tsx` | Estrutura compartilhada da interface |
-| `src/app/tarefas/nova/page.tsx` | Criação de tarefa |
-| `src/app/tarefas/[id]/editar/page.tsx` | Edição carregada no servidor |
-| `src/app/tarefas/loading.tsx` | Estado de carregamento das rotas de formulário |
-| `src/app/error.tsx` | Falha inesperada de página |
-| `src/app/not-found.tsx` | Página ou tarefa inexistente |
-| `src/app/api/trpc/[trpc]/route.ts` | Handler HTTP do tRPC |
-| `src/server/context.ts` | Coleção em memória do processo |
-| `src/server/trpc.ts` | Configuração do tRPC e formatação de erros |
-| `src/server/routers/tarefas.ts` | Regras das operações, filtros, resumo e paginação |
-| `src/server/router.ts` | Composição de `AppRouter` |
-| `src/server/caller.ts` | Acesso ao router durante SSR |
-| `src/lib/tarefa.ts` | Tipos, constantes e schemas compartilhados |
-| `src/lib/erro.ts` | Mensagens de falha para a interface |
-| `src/trpc/` | Cliente, provider e TanStack Query |
-| `src/components/` | Formulário, listagem, feedback e ilustração |
-| `src/types/styles.d.ts` | Declaração de imports CSS |
-| `tests/tarefas.test.ts` | Testes do backend |
-| `tests/e2e/tarefas.spec.ts` | Testes de navegador |
+| `src/app/page.tsx` | Initial task list and SSR |
+| `src/app/layout.tsx` | Shared interface layout |
+| `src/app/tarefas/nova/page.tsx` | Task creation |
+| `src/app/tarefas/[id]/editar/page.tsx` | Server-loaded task editing |
+| `src/app/tarefas/loading.tsx` | Loading state for form routes |
+| `src/app/error.tsx` | Unexpected page errors |
+| `src/app/not-found.tsx` | Missing page or task |
+| `src/app/api/trpc/[trpc]/route.ts` | tRPC HTTP handler |
+| `src/server/context.ts` | Process-level in-memory collection |
+| `src/server/trpc.ts` | tRPC configuration and error formatting |
+| `src/server/routers/tarefas.ts` | Operation rules, filters, summary, and pagination |
+| `src/server/router.ts` | `AppRouter` composition |
+| `src/server/caller.ts` | Router access during SSR |
+| `src/lib/tarefa.ts` | Shared types, constants, and schemas |
+| `src/lib/erro.ts` | User-facing error messages |
+| `src/trpc/` | Client, provider, and TanStack Query |
+| `src/components/` | Form, task list, feedback, and illustration |
+| `src/types/styles.d.ts` | CSS import declarations |
+| `tests/tarefas.test.ts` | Backend tests |
+| `tests/e2e/tarefas.spec.ts` | Browser tests |
 
-No navegador, o cliente tRPC faz requisições ao handler em `/api/trpc`, que executa as procedures com acesso à coleção em memória. No SSR, a página chama o mesmo router diretamente no servidor.
+In the browser, the tRPC client sends requests to the `/api/trpc` handler, which executes procedures with access to the in-memory collection. During SSR, the page calls the same router directly on the server.
 
-As procedures operam sobre o contexto, sem camadas adicionais de serviço ou repositório que apenas repassariam chamadas neste escopo.
+The procedures operate directly on the context, without additional service or repository layers that would merely forward calls at this scale.
 
-## Modelo de dados e operações
+## Data Model and Operations
 
-### Tarefa
+### Task
 
-| Campo | Tipo | Regra |
+| Field | Type | Rule |
 | --- | --- | --- |
-| `id` | `string` com UUID | Gerado no backend por `crypto.randomUUID()` |
-| `titulo` | `string` | Obrigatório após `trim()`; até 120 caracteres |
-| `descricao` | `string` opcional | Até 2.000 caracteres; vazia é normalizada para ausência |
-| `dataCriacao` | `number` | Timestamp Unix em milissegundos, gerado no backend |
-| `prioridade` | `baixa`, `media` ou `alta` | Padrão `media` |
-| `concluida` | `boolean` | `false` na criação |
+| `id` | UUID `string` | Generated in the backend with `crypto.randomUUID()` |
+| `titulo` | `string` | Required after `trim()`; maximum 120 characters |
+| `descricao` | Optional `string` | Maximum 2,000 characters; empty values are normalized to absence |
+| `dataCriacao` | `number` | Unix timestamp in milliseconds, generated in the backend |
+| `prioridade` | `baixa`, `media`, or `alta` | Defaults to `media` |
+| `concluida` | `boolean` | `false` on creation |
 
-A edição preserva ID, data de criação e conclusão. O formulário substitui os campos editáveis, incluindo a prioridade. Omitir a descrição ou enviá-la vazia remove o valor anterior.
+Editing preserves the ID, creation date, and completion status. The form replaces editable fields, including priority. Omitting the description or submitting an empty one removes the previous value.
 
-### Procedures tRPC
+### tRPC Procedures
 
-| Procedure | Tipo | Entrada | Retorno |
+| Procedure | Type | Input | Return Value |
 | --- | --- | --- | --- |
-| `tarefas.listar` | Query | Limite, cursor, busca, status e prioridade | Página e resumo global |
-| `tarefas.buscarPorId` | Query | ID | Tarefa existente |
-| `tarefas.criar` | Mutation | Título, descrição e prioridade | Tarefa criada |
-| `tarefas.atualizar` | Mutation | ID e campos do formulário | Tarefa atualizada |
-| `tarefas.alterarConclusao` | Mutation | ID e booleano `concluida` | Tarefa com o estado definido |
-| `tarefas.deletar` | Mutation | ID | ID excluído |
+| `tarefas.listar` | Query | Limit, cursor, search, status, and priority | Page and global summary |
+| `tarefas.buscarPorId` | Query | ID | Existing task |
+| `tarefas.criar` | Mutation | Title, description, and priority | Created task |
+| `tarefas.atualizar` | Mutation | ID and form fields | Updated task |
+| `tarefas.alterarConclusao` | Mutation | ID and `concluida` boolean | Task with the requested completion state |
+| `tarefas.deletar` | Mutation | ID | Deleted ID |
 
-Os parâmetros opcionais têm os padrões definidos nos schemas. Queries usam GET e mutations usam POST pelo protocolo tRPC.
+Optional parameters use the defaults defined in the schemas. Queries use GET and mutations use POST according to the tRPC protocol.
 
-### Tratamento de erros
+### Error Handling
 
-- `BAD_REQUEST`: entrada inválida.
-- `NOT_FOUND`: tarefa inexistente.
-- Mensagens de validação são formatadas para evitar a exibição do JSON bruto do Zod.
-- Falhas de rede recebem uma mensagem de conexão na interface.
-- Mutações não são repetidas automaticamente.
-- O cache é invalidado depois de uma mutação confirmada.
+- `BAD_REQUEST`: Invalid input.
+- `NOT_FOUND`: Task does not exist.
+- Validation messages are formatted to avoid displaying raw Zod JSON.
+- Network failures display a connection error message in the interface.
+- Mutations are not automatically retried.
+- The cache is invalidated after a confirmed mutation.
 
-A operação de conclusão recebe o estado desejado, em vez de inverter o valor. Repetir a mesma chamada com `concluida: true` não reabre a tarefa.
+The completion operation accepts the desired state instead of toggling the current value. Repeating the same call with `concluida: true` does not reopen the task.
 
-## SSR, paginação e indicadores
+## SSR, Pagination, and Metrics
 
-### Renderização inicial no servidor
+### Initial Server-Side Rendering
 
-`src/app/page.tsx` é um Server Component assíncrono com `dynamic = "force-dynamic"`. A cada requisição, ele consulta `createServerCaller().tarefas.listar(...)` e passa a primeira página como `initialData`.
+`src/app/page.tsx` is an asynchronous Server Component with `dynamic = "force-dynamic"`. On every request, it calls `createServerCaller().tarefas.listar(...)` and passes the first page as `initialData`.
 
-O caller reutiliza a validação e as regras do mesmo router do CRUD. A primeira lista já compõe o HTML inicial.
+The caller reuses the validation and business rules of the same router used for CRUD. The initial task list is already part of the rendered HTML.
 
-A página principal não usa um `loading.tsx` global que a envolva automaticamente em uma fronteira de Suspense. O carregamento de rota está restrito aos formulários, permitindo verificar a lista inicial visível com JavaScript desativado.
+The main page does not use a global `loading.tsx` that would automatically wrap it in a Suspense boundary. Route-level loading is limited to the forms, making it possible to verify the initial task list with JavaScript disabled.
 
-Um Client Component permite hooks e eventos e também participa da renderização inicial no servidor. `"use client"` não elimina o SSR.
+A Client Component supports hooks and events while also participating in the initial server render. `"use client"` does not disable SSR.
 
-### Paginação e filtros
+### Pagination and Filters
 
-- Padrão de 10 e máximo de 50 tarefas por página.
-- Ordenação decrescente por data e ID.
-- Cursor com `dataCriacao` e `id` da última tarefa.
-- `proximoCursor: null` indica o fim.
-- A exclusão da tarefa do cursor não impede o carregamento seguinte, pois a comparação usa valores.
-- Busca e filtros são aplicados à coleção inteira antes da paginação.
-- O frontend usa `useInfiniteQuery` e `IntersectionObserver`, com botão alternativo.
-- Depois de uma falha de paginação, uma nova tentativa depende da ação do usuário.
+- Default page size of 10 tasks, with a maximum of 50.
+- Descending order by creation date and ID.
+- Cursor containing `dataCriacao` and `id` of the last task.
+- `proximoCursor: null` indicates that there are no more pages.
+- Deleting the task referenced by the cursor does not prevent the next page from loading, because comparisons use cursor values.
+- Search and filters are applied to the entire collection before pagination.
+- The frontend uses `useInfiniteQuery` and `IntersectionObserver`, with a fallback button.
+- After a pagination error, retrying requires a user action.
 
-### Definição dos indicadores
+### Metric Definitions
 
-| Indicador | Cálculo |
+| Metric | Calculation |
 | --- | --- |
-| Total | Quantidade de tarefas na coleção |
-| Em aberto | Total menos concluídas |
-| Concluídas | Quantidade com `concluida: true` |
-| Prioridade alta em aberto | Quantidade não concluída com prioridade alta |
-| Taxa de conclusão | `Math.round(concluidas / total * 100)`; zero para lista vazia |
+| Total | Number of tasks in the collection |
+| Open | Total minus completed tasks |
+| Completed | Number of tasks with `concluida: true` |
+| Open high-priority tasks | Number of incomplete tasks with high priority |
+| Completion rate | `Math.round(concluidas / total * 100)`; zero for an empty list |
 
-O `total` da página reflete a busca e os filtros. O `resumo` reflete a coleção inteira, independentemente dos itens carregados no navegador.
+The page's `total` reflects the active search and filters. The `resumo` reflects the entire collection, regardless of which items have been loaded in the browser.
 
-Esses indicadores descrevem a lista. Eles não comprovam aumento de produtividade, economia de tempo ou impacto financeiro. O cartão de foco é uma regra determinística baseada nas prioridades, não uma funcionalidade de IA.
+These metrics describe the task list. They do not demonstrate increased productivity, time savings, or financial impact. The focus card follows a deterministic rule based on priorities; it is not an AI feature.
 
-As datas são exibidas no horário de São Paulo. Os elementos visuais usam CSS e SVG locais, sem imagens ou fontes externas obrigatórias.
+Dates are displayed in São Paulo time. Visual elements use local CSS and SVG, with no required external images or fonts.
 
-## Guia do backend em TypeScript
+## TypeScript Backend Guide
 
-O backend é integralmente TypeScript e roda no processo Node do Next.js. O tRPC publica as operações para o navegador.
+The backend is written entirely in TypeScript and runs within the Next.js Node.js process. tRPC exposes the operations to the browser.
 
-### Comparação de responsabilidades
+### Responsibility Comparison
 
-| Em uma API .NET | Neste projeto |
+| In a .NET API | In This Project |
 | --- | --- |
-| Ação do controller | Procedure tRPC |
-| DTO com validação | Schema Zod |
-| Classe/record do contrato | Tipo TypeScript inferido do schema |
-| Serviço singleton em memória | Map no contexto, mantido em globalThis |
-| Erro 400/404 da API | TRPCError BAD_REQUEST/NOT_FOUND |
-| Cliente HTTP tipado | Cliente tRPC inferido de AppRouter |
+| Controller action | tRPC procedure |
+| DTO with validation | Zod schema |
+| Contract class/record | TypeScript type inferred from a schema |
+| In-memory singleton service | Map in the context, retained through globalThis |
+| API 400/404 error | TRPCError BAD_REQUEST/NOT_FOUND |
+| Typed HTTP client | tRPC client inferred from AppRouter |
 
-A comparação é sobre responsabilidades: os mecanismos de execução e o modelo de concorrência são diferentes.
+This comparison focuses on responsibilities: the execution mechanisms and concurrency models differ.
 
-### Ordem de leitura
+### Recommended Reading Order
 
-1. `src/lib/tarefa.ts`: define os dados e os campos aceitos.
-2. `src/server/context.ts`: cria a coleção em memória.
-3. `src/server/trpc.ts`: inicializa o tRPC e formata os erros.
-4. `src/server/routers/tarefas.ts`: implementa as operações.
-5. `src/server/router.ts`: compõe o router principal e exporta seu tipo.
-6. `src/app/api/trpc/[trpc]/route.ts`: recebe as requisições HTTP.
-7. `src/server/caller.ts` e `src/app/page.tsx`: usam as mesmas operações no SSR.
+1. `src/lib/tarefa.ts`: Defines the data and accepted fields.
+2. `src/server/context.ts`: Creates the in-memory collection.
+3. `src/server/trpc.ts`: Initializes tRPC and formats errors.
+4. `src/server/routers/tarefas.ts`: Implements the operations.
+5. `src/server/router.ts`: Composes the main router and exports its type.
+6. `src/app/api/trpc/[trpc]/route.ts`: Receives HTTP requests.
+7. `src/server/caller.ts` and `src/app/page.tsx`: Use the same operations during SSR.
 
-### O papel do Zod
+### The Role of Zod
 
-`tarefaSchema` descreve e valida os campos recebidos. `z.infer<typeof tarefaSchema>` obtém o tipo TypeScript correspondente.
+`tarefaSchema` describes and validates incoming fields. `z.infer<typeof tarefaSchema>` derives the corresponding TypeScript type.
 
-A procedure declara `.input(tarefaSchema)`. O tRPC valida a entrada antes de executar a operação, como a validação de um DTO antes de chegar à ação da API.
+The procedure declares `.input(tarefaSchema)`. tRPC validates the input before executing the operation, similar to validating a DTO before it reaches an API action.
 
-O formulário reutiliza o mesmo schema, mas o backend continua validando chamadas feitas sem passar pela interface.
+The form reuses the same schema, but the backend still validates requests made without going through the interface.
 
-### Contexto e memória
+### Context and In-Memory Storage
 
-`createContext()` disponibiliza `ctx.tarefas` para as procedures. A coleção é um `Map` indexado pelo UUID.
+`createContext()` makes `ctx.tarefas` available to the procedures. The collection is a `Map` indexed by UUID.
 
-`globalThis` preserva a referência no processo, inclusive em reavaliações do módulo no desenvolvimento. Isso não é persistência: reiniciar o processo apaga a coleção.
+`globalThis` preserves the reference within the process, including during module reevaluation in development. This is not persistence: restarting the process clears the collection.
 
-As operações de leitura e escrita do Map são síncronas e não contêm `await` entre verificar e alterar a tarefa. Não há coordenação entre processos ou garantia de edição concorrente entre clientes; uma atualização posterior pode substituir a anterior.
+Map reads and writes are synchronous, with no `await` between checking and modifying a task. There is no coordination between processes or guarantee of concurrent edit protection across clients; a later update can overwrite an earlier one.
 
-### Queries e mutations
+### Queries and Mutations
 
-`listar` e `buscarPorId` são queries de leitura. `criar`, `atualizar`, `alterarConclusao` e `deletar` são mutations.
+`listar` and `buscarPorId` are read-only queries. `criar`, `atualizar`, `alterarConclusao`, and `deletar` are mutations.
 
-O transporte HTTP usa GET para queries e POST para mutations. Esses nomes identificam operações do protocolo tRPC, em vez de rotas REST por verbo/recurso.
+The HTTP transport uses GET for queries and POST for mutations. These names identify operations in the tRPC protocol rather than REST routes based on HTTP verbs and resources.
 
-`encontrar()` centraliza o erro de tarefa inexistente. No frontend, os erros são convertidos em mensagens visíveis.
+`encontrar()` centralizes the error raised when a task does not exist. On the frontend, errors are converted into user-facing messages.
 
-### Tipagem e execução
+### Typing and Execution
 
-O frontend importa `AppRouter` com `import type`. Isso compartilha o contrato durante a compilação, sem incluir a implementação do servidor no bundle do navegador.
+The frontend imports `AppRouter` using `import type`. This shares the contract at compile time without bundling the server implementation into the browser code.
 
-A tipagem ajuda a detectar chamadas incorretas no desenvolvimento. Zod verifica os dados em tempo de execução.
+Static typing helps detect incorrect calls during development. Zod validates data at runtime.
 
-No SSR, o servidor chama o router diretamente. Depois da hidratação, o navegador usa o cliente tRPC por HTTP.
+During SSR, the server calls the router directly. After hydration, the browser uses the tRPC client over HTTP.
 
-### Já implementados
+## Project Presentation
 
-| Diferencial | O que demonstra |
+### Implemented Enhancements
+
+| Enhancement | What It Demonstrates |
 | --- | --- |
-| Indicadores calculados no backend | Uso dos dados disponíveis com definição clara |
-| Conclusão e prioridade | Tradução de uma necessidade de organização em comportamento simples |
-| Busca e filtros antes da paginação | Correção mesmo para dados ainda não carregados |
-| Cursor com data e ID | Tratamento de exclusões e timestamps iguais |
-| SSR visível sem JavaScript | Entendimento do requisito e verificação no navegador |
-| Contratos compartilhados e validação | Consistência entre interface e backend |
-| Testes de regras e fluxos | Confiança nos comportamentos importantes |
-| CI preparada | Verificações reproduzíveis ao entregar |
-| Interface acessível e responsiva | Atenção à experiência das pessoas |
-| README com limites e decisões | Comunicação técnica e controle do escopo |
+| Backend-calculated metrics | Effective use of available data with clear definitions |
+| Completion and priority | Translating an organizational need into straightforward behavior |
+| Search and filters before pagination | Correct results even for data not yet loaded |
+| Cursor with date and ID | Handling deletions and identical timestamps |
+| SSR visible without JavaScript | Understanding the requirement and verifying it in the browser |
+| Shared contracts and validation | Consistency between frontend and backend |
+| Business-rule and flow tests | Confidence in important behaviors |
+| CI workflow ready | Reproducible checks for delivery |
+| Accessible, responsive interface | Attention to user experience |
+| README covering limitations and decisions | Technical communication and scope management |
 
-Os indicadores são contagem e taxa de conclusão de tarefas. Não há dados suficientes para afirmar aumento de produtividade, economia de tempo ou impacto financeiro.
+The metrics represent task counts and completion rates. There is not enough data to claim productivity gains, time savings, or financial impact.
 
-### Próximo passo: Agente IA 
+### Next Step: AI Agent
 
-- **sugerir subtarefas a partir da descrição de uma tarefa**.
+- **Suggest subtasks based on a task's description**.
 
-O fluxo proposto: a pessoa pede a sugestão, vê uma prévia e escolhe o que aproveitar. A criação continua dependendo da confirmação humana.
+The proposed flow is simple: the user requests suggestions, reviews a preview, and chooses what to keep. Creating subtasks still requires human confirmation.
 
-## Solução de problemas
+## Troubleshooting
 
-### Playwright não encontrado ou parâmetros com any implícito
+### Playwright Not Found or Implicit `any` Parameters
 
-Reinstale as dependências de desenvolvimento na raiz:
+Reinstall the development dependencies from the project root:
 
 ```bash
 npm ci --include=dev
 npm ls @playwright/test
 ```
 
-Se a dependência tiver sido removida do `package.json`, recoloque a versão adotada:
+If the dependency was removed from `package.json`, reinstall the version used by the project:
 
 ```bash
 npm install -D --save-exact @playwright/test@1.64.1 --include=dev
 ```
 
-Os testes devem permanecer separados:
+The tests should remain separate:
 
-| Arquivo | Executor e import |
+| File | Test Runner and Import |
 | --- | --- |
 | `tests/tarefas.test.ts` | Backend: `import { test } from "node:test";` |
-| `tests/e2e/tarefas.spec.ts` | Navegador: `import { test, expect } from "@playwright/test";` |
+| `tests/e2e/tarefas.spec.ts` | Browser: `import { test, expect } from "@playwright/test";` |
 
-O conteúdo E2E não deve ser copiado para o arquivo de testes do backend. Quando o pacote é resolvido, os tipos de `page`, `browser` e callbacks são inferidos.
+E2E test code should not be copied into the backend test file. Once the package is resolved correctly, the types for `page`, `browser`, and callbacks are inferred.
 
-### Porta ocupada ou erro de conexão
+### Port in Use or Connection Error
 
-Para desenvolvimento, use outra porta com `npm run dev -- --port 3001`. Para E2E, deixe livre a porta 3100 configurada no Playwright.
+For development, use a different port with `npm run dev -- --port 3001`. For E2E tests, keep port 3100, as configured in Playwright, available.
 
-Se a interface informar falha de conexão, verifique se o servidor está em execução e consulte seu terminal. Neste projeto não existe uma API separada que precise ser iniciada em outro processo.
+If the interface reports a connection error, make sure the server is running and check its terminal output. This project does not have a separate API that needs to be started in another process.
 
-## Próximos passos de melhoria
+## Next Steps and Improvements
 
-| Prioridade | Melhoria | Objetivo | Como validar |
+| Priority | Improvement | Goal | How to Validate |
 | --- | --- | --- | --- |
-| Alta | Publicar e acompanhar a CI no repositório | Tornar a validação remota reproduzível | Pipeline completo aprovado em uma PR |
-| Alta | Auditoria automatizada de acessibilidade | Ampliar a verificação de contraste, teclado e semântica | Testes automatizados mais revisão manual |
-| Alta | Controle de versão por tarefa | Detectar edições concorrentes em vez de sobrescrever silenciosamente | Teste de duas edições sobre a mesma versão |
-| Média | Observabilidade estruturada | Diagnosticar latência e falhas das operações | Logs correlacionados e testes dos eventos essenciais |
-| Média | Exportação dos resultados filtrados | Facilitar a revisão da lista fora da aplicação | Exportar todas as páginas respeitando filtros |
-| Média | Ampliação dos testes de interface | Verificar outros tamanhos de tela e navegadores | Casos adicionais e execução em CI |
-| Evolução de produto | Persistência compartilhada | Manter dados após reinício e suportar réplicas | Testes de integração com armazenamento real |
-| Evolução de produto | Autenticação e autorização | Separar tarefas por usuário com verificação no backend | Testes de acesso permitido e negado |
-| Diferencial | IA para sugerir subtarefas | Ajudar a transformar uma descrição em próximos passos | Saída validada, prévia, confirmação e tratamento de falha |
+| High | Publish and monitor CI in the repository | Make remote validation reproducible | Complete pipeline passes on a PR |
+| High | Automated accessibility audit | Extend checks for contrast, keyboard support, and semantics | Automated tests plus manual review |
+| High | Per-task version control | Detect concurrent edits instead of silently overwriting data | Test two edits against the same version |
+| Medium | Structured observability | Diagnose operation latency and failures | Correlated logs and tests for key events |
+| Medium | Export filtered results | Make it easier to review the task list outside the application | Export all pages while respecting filters |
+| Medium | Broader UI test coverage | Verify additional screen sizes and browsers | Additional scenarios running in CI |
+| Product evolution | Shared persistent storage | Retain data after restarts and support multiple replicas | Integration tests with persistent storage |
+| Product evolution | Authentication and authorization | Separate tasks by user with backend-side access checks | Tests for allowed and denied access |
+| Additional feature | AI-powered subtask suggestions | Help turn a task description into actionable next steps | Validated output, preview, confirmation, and error handling |
 
-## Limitações e decisões de escopo
+## Limitations and Scope Decisions
 
-- O armazenamento é um `Map` compartilhado somente no processo Node atual.
-- Reiniciar o servidor remove os dados; várias instâncias não compartilham a lista.
-- O modo atual deve ser executado em uma única instância Node. Ambientes serverless ou réplicas exigiriam rever o armazenamento.
-- Não há autenticação, isolamento por usuário ou sincronização em tempo real entre abas.
-- A paginação não representa um snapshot entre requisições; alterações concorrentes podem aparecer nas atualizações seguintes.
-- Uma edição posterior pode substituir dados de outra edição. Controle de concorrência está no roadmap.
-- A acessibilidade atual contempla práticas básicas; uma auditoria completa está planejada.
-- A identidade visual é um estudo inspirado na referência fornecida para o desafio técnico.
+- Storage is a `Map` shared only within the current Node.js process.
+- Restarting the server removes all data; multiple instances do not share the task list.
+- The current version should run in a single Node.js instance. Serverless environments or replicas would require a different storage approach.
+- There is no authentication, per-user isolation, or real-time synchronization between browser tabs.
+- Pagination does not provide a snapshot across requests; concurrent changes may appear in subsequent updates.
+- A later edit may overwrite data from another edit. Concurrency control is on the roadmap.
+- The current accessibility implementation covers basic practices; a full audit is planned.
+- The visual identity is a design study inspired by the reference provided for the technical challenge.
 
-## Referências
+## References
 
 - [Next.js 15](https://nextjs.org/docs/15)
 - [tRPC](https://trpc.io/docs/)
 - [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
 - [Zod](https://zod.dev/)
 - [Playwright](https://playwright.dev/docs/intro)
-- [TypeScript e imports por efeito colateral](https://www.typescriptlang.org/tsconfig/noUncheckedSideEffectImports.html)
+- [TypeScript and Side-Effect Imports](https://www.typescriptlang.org/tsconfig/noUncheckedSideEffectImports.html)
 - [Artefact](https://www.artefact.com/br/)
 - [Data & Software Engineer — Artefact](https://jobs.artefact.com/job/data-software-engineer-m-f-d/)
